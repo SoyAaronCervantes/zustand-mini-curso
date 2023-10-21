@@ -1,32 +1,35 @@
-import { DragEvent } from 'react';
+import {DragEvent, useState} from 'react';
 import { IoCheckmarkCircleOutline, IoEllipsisHorizontalOutline } from 'react-icons/io5';
 import type {Task, TaskStatus} from "../../types";
 import {SingleTask} from "./SingleTask.tsx";
 import {useTaskStore} from "../../stores";
+import classNames from 'classnames';
 
 interface Props {
   title: string;
   tasks: Task[];
-  value: TaskStatus;
+  status: TaskStatus;
 }
 
-export const JiraTasks = ({ title, tasks }: Props) => {
+export const JiraTasks = ({ title, status, tasks }: Props) => {
   const isDragging = useTaskStore( state => !!state.draggingTaskId );
-  console.log({isDragging});
+  const onTaskDrop = useTaskStore( state => state.onTaskDrop );
+  const [onDragOver, setOnDragOver] = useState(false)
 
   const handleDragOver = (event: DragEvent<HTMLElement>) => {
     event.preventDefault();
-    console.log( 'drag over' )
+    setOnDragOver(true);
   }
 
   const handleDragLeave = (event: DragEvent<HTMLElement>) => {
     event.preventDefault();
-    console.log( 'drag leave' )
+    setOnDragOver(false);
   }
 
   const handleDrop = (event: DragEvent<HTMLElement>) => {
     event.preventDefault();
-    console.log( 'drop' )
+    setOnDragOver(false);
+    onTaskDrop( status );
   }
 
   return (
@@ -34,7 +37,13 @@ export const JiraTasks = ({ title, tasks }: Props) => {
       onDragOver={ (event) => handleDragOver(event)}
       onDragLeave={ (event) => handleDragLeave(event)}
       onDrop={ (event) => handleDrop(event)}
-      className="!text-black border-4 border-dotted border-blue-400 relative flex flex-col rounded-[20px]  bg-white bg-clip-border shadow-3xl shadow-shadow-500  w-full !p-4 3xl:p-![18px]">
+      className={
+        classNames(
+          '!text-black border-4 relative flex flex-col rounded-[20px]  bg-white bg-clip-border shadow-3xl shadow-shadow-500  w-full !p-4 3xl:p-![18px]',
+          {'border-dotted border-blue-400': isDragging},
+          {'border-dotted border-green-400': isDragging && onDragOver},
+        )
+      }>
       {/* Task Header */ }
       <article className="relative flex flex-row justify-between">
         <article className="flex items-center justify-center">

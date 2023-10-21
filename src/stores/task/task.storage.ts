@@ -11,6 +11,8 @@ interface Actions {
   getTasksByStatus: (status: TaskStatus) => Task[];
   setDraggingTaskId: (id: string) => void;
   removeDraggingTaskId: () => void;
+  changeTaskStatus: (id: string, status: TaskStatus) => void;
+  onTaskDrop: (status: TaskStatus) => void;
 }
 
 type TaskStore = TaskStorage & Actions;
@@ -50,7 +52,23 @@ const storeApi: StateCreator<TaskStore, [["zustand/devtools", never]]> = (set, g
     return values.filter(task => task.status === status);
   },
   setDraggingTaskId: (id: string) => set({draggingTaskId: id}, false, 'setDraggingTaskId'),
-  removeDraggingTaskId: () => set({ draggingTaskId: undefined }, false, 'removeDraggingTaskId')
+  removeDraggingTaskId: () => set({ draggingTaskId: undefined }, false, 'removeDraggingTaskId'),
+  changeTaskStatus: (id, status) => {
+    const task = get().tasks[id];
+    task.status = status;
+    set( (state) => ({
+      tasks: {
+        ...state.tasks,
+        [id]: task,
+      }
+    }), false, 'changeTaskStatus')
+  },
+  onTaskDrop: (status) => {
+    const taskId = get().draggingTaskId;
+    if ( !taskId ) return;
+    get().changeTaskStatus(taskId, status);
+    get().removeDraggingTaskId();
+  }
 })
 
 
