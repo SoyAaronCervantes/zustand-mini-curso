@@ -1,4 +1,6 @@
-import {create} from "zustand";
+import {create, StateCreator} from "zustand";
+import {devtools, persist} from "zustand/middleware";
+import {createFirebaseStorage,} from "../storages";
 
 type Person = {
   name: string;
@@ -12,9 +14,20 @@ interface PersonActions {
 
 type PersonStore = Person & PersonActions;
 
-export const usePersonStore = create<PersonStore>()(set => ({
+const personStateCreator: StateCreator<PersonStore, [['zustand/devtools', unknown]]> = (set) => ({
   name: '',
   lastName: '',
-  setName: (name: string) => set(state => ({ name })),
-  setLastName: (lastName: string) => set(state => ({ lastName })),
-}));
+  setName: (name: string) => set(({name}), false, 'setName'),
+  setLastName: (lastName: string) => set(({lastName}), false, 'setLastName'),
+})
+
+
+export const usePersonStore = create<PersonStore>()(
+  devtools(
+    persist(personStateCreator, {
+      name: 'person',
+      storage: createFirebaseStorage,
+      // storage: createSessionStorage,
+    })
+  )
+);
