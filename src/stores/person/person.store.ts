@@ -1,6 +1,6 @@
 import {create, StateCreator} from "zustand";
 import {devtools, persist} from "zustand/middleware";
-import {createFirebaseStorage,} from "../storages";
+// import {createFirebaseStorage,} from "../storages";
 
 type Person = {
   name: string;
@@ -26,7 +26,7 @@ export const usePersonStore = create<PersonStore>()(
   devtools(
     persist(personStateCreator, {
       name: 'person',
-      storage: createFirebaseStorage,
+      // storage: createFirebaseStorage,
       // storage: createSessionStorage,
     })
   )
