@@ -1,8 +1,12 @@
 import {create} from "zustand";
-import {authStateCreator, AuthStore} from "./auth.state.ts";
-import {devtools} from "zustand/middleware";
+import {authState, AuthStore} from "./auth.state.ts";
+import {devtools, persist} from "zustand/middleware";
 
-export type zustandMiddlewares = [["zustand/devtools", never]];
+export type zustandMiddlewares = [["zustand/devtools", never], ["zustand/persist", unknown]];
 export const useAuthStore = create<AuthStore>()(
-  devtools(authStateCreator)
+  devtools(
+    persist(
+      authState, {name: 'auth'}
+    ), { name: 'auth' }
+  )
 )

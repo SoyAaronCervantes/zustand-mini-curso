@@ -1,4 +1,4 @@
-import superagent, {HTTPError, ResponseError} from 'superagent';
+import superagent, {ResponseError} from 'superagent';
 import {LoginResponse} from "../types";
 import {tesloAPI} from "../api/teslo";
 
@@ -9,14 +9,24 @@ export class AuthService {
         .post('/auth/login')
         .send({email, password});
       const res = await tesloAPI(loginRequest);
-      const data = res.body as LoginResponse;
+      return res.body as LoginResponse;
 
-      console.log(data);
-      return data;
-
-    } catch (error: unknown) {
-      console.log(error);
+    } catch (e) {
+      const error = e as ResponseError;
+      console.error({ message: error.response?.body.message });
       throw new Error('Login failed');
+    }
+  }
+
+  static checkStatus = async (): Promise<LoginResponse> => {
+    const request = superagent.get('/auth/check-status');
+    try {
+      const res = await tesloAPI(request);
+      return res.body as LoginResponse;
+    } catch (e) {
+      const error = e as ResponseError;
+      console.error({ message: error.response?.body.message });
+      throw new Error('Unauthorized, unable to check status');
     }
   }
 }

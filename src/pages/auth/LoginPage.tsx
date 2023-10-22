@@ -1,20 +1,28 @@
 import { FormEvent } from 'react';
+import {useNavigate} from "react-router-dom";
+import {useAuthStore} from "../../stores";
 
 export const LoginPage = () => {
+  const navigate = useNavigate();
+  const login = useAuthStore( state => state.login );
 
-  const onSubmit = (event: FormEvent<HTMLFormElement> ) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     // const { username, password, remember } = event.target as HTMLFormElement;
-    const { email, password,remember } = event.target as typeof event.target & {
+    const {email, password, remember} = event.target as typeof event.target & {
       email: { value: string };
       password: { value: string };
       remember: { checked: boolean }
     };
+
     console.log(email.value, password.value, remember.checked);
 
-    email.value = '';
-    password.value = '';
-    remember.checked = false;
+    try {
+      await login(email.value, password.value);
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Login Failed')
+    }
   }
 
 
