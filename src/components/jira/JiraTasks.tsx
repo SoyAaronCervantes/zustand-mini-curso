@@ -1,9 +1,10 @@
 import {DragEvent, useState} from 'react';
-import { IoCheckmarkCircleOutline, IoEllipsisHorizontalOutline } from 'react-icons/io5';
+import {IoAddOutline, IoCheckmarkCircleOutline} from 'react-icons/io5';
 import type {Task, TaskStatus} from "../../types";
 import {SingleTask} from "./SingleTask.tsx";
 import {useTaskStore} from "../../stores";
 import classNames from 'classnames';
+import swal from 'sweetalert2';
 
 interface Props {
   title: string;
@@ -13,6 +14,7 @@ interface Props {
 
 export const JiraTasks = ({ title, status, tasks }: Props) => {
   const isDragging = useTaskStore( state => !!state.draggingTaskId );
+  const addTask = useTaskStore( state => state.addTask );
   const onTaskDrop = useTaskStore( state => state.onTaskDrop );
   const [onDragOver, setOnDragOver] = useState(false)
 
@@ -20,16 +22,29 @@ export const JiraTasks = ({ title, status, tasks }: Props) => {
     event.preventDefault();
     setOnDragOver(true);
   }
-
   const handleDragLeave = (event: DragEvent<HTMLElement>) => {
     event.preventDefault();
     setOnDragOver(false);
   }
-
   const handleDrop = (event: DragEvent<HTMLElement>) => {
     event.preventDefault();
     setOnDragOver(false);
     onTaskDrop( status );
+  }
+
+  const handleAddTask = async (status: TaskStatus) => {
+    const { isConfirmed, value } = await swal.fire({
+      title: `Add new task to ${status}`,
+      input: 'text',
+      inputLabel: 'Task name',
+      inputPlaceholder: 'Enter you new task name',
+      showCancelButton: true,
+      inputValidator: (value) => {
+        if (!value) return 'You need to write something!';
+      }
+    })
+    if (!isConfirmed) return;
+    addTask(value, status);
   }
 
   return (
@@ -56,8 +71,8 @@ export const JiraTasks = ({ title, status, tasks }: Props) => {
 
           <h4 className="ml-4 text-xl font-bold text-navy-700">{ title }</h4>
         </article>
-        <button>
-          <IoEllipsisHorizontalOutline />
+        <button onClick={ () => handleAddTask(status) }>
+          <IoAddOutline />
         </button>
 
       </article>
