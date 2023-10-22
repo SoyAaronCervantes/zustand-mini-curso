@@ -1,5 +1,6 @@
 import {create, StateCreator} from "zustand";
 import {devtools, persist} from "zustand/middleware";
+import {useWeddingBounceStore} from "../wedding";
 // import {createFirebaseStorage,} from "../storages";
 
 type Person = {
@@ -31,3 +32,9 @@ export const usePersonStore = create<PersonStore>()(
     })
   )
 );
+
+usePersonStore.subscribe( (nextState, previousState) => {
+  const {name, lastName} = nextState;
+  useWeddingBounceStore.getState().setName(name);
+  useWeddingBounceStore.getState().setLastName(lastName);
+});
