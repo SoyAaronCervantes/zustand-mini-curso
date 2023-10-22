@@ -10,6 +10,10 @@ export const WeddingInvitationPage = () => {
   const setLastName = useWeddingBounceStore( state => state.setLastName );
   const guestNumber = useWeddingBounceStore( state => state.guestsCount );
   const setGuestNumber = useWeddingBounceStore( state => state.setGuestsCount );
+  const eventDate = useWeddingBounceStore( state => state.getEventDate() );
+  const eventTime = useWeddingBounceStore( state => state.getEventTime() );
+  const setEventDate = useWeddingBounceStore( state => state.setEventDate );
+  const setEventTime = useWeddingBounceStore( state => state.setEventTime );
 
   return (
     <>
@@ -86,6 +90,8 @@ export const WeddingInvitationPage = () => {
                     type="date"
                     name="eventDate"
                     id="eventDate"
+                    value={eventDate}
+                    onChange={e => setEventDate(e.target.value)}
                   />
                 </div>
               </div>
@@ -100,6 +106,8 @@ export const WeddingInvitationPage = () => {
                     type="time"
                     name="eventTime"
                     id="eventTime"
+                    value={eventTime}
+                    onChange={e => setEventTime(e.target.value)}
                   />
                 </div>
               </div>
