@@ -1,8 +1,16 @@
 import { WhiteCard } from '../../components';
+import {useWeddingBounceStore} from "../../stores/wedding";
 
 
 
 export const WeddingInvitationPage = () => {
+  const name = useWeddingBounceStore( state => state.name );
+  const lastName = useWeddingBounceStore( state => state.lastName );
+  const setName = useWeddingBounceStore( state => state.setName );
+  const setLastName = useWeddingBounceStore( state => state.setLastName );
+  const guestNumber = useWeddingBounceStore( state => state.guestsCount );
+  const setGuestNumber = useWeddingBounceStore( state => state.setGuestsCount );
+
   return (
     <>
       <h1>Invitación de Boda</h1>
@@ -10,7 +18,7 @@ export const WeddingInvitationPage = () => {
       <hr />
 
       <WhiteCard className="flex items-center justify-center p-12">
-        <div className="mx-auto w-full max-w-[550px]">
+        <article className="mx-auto w-full max-w-[550px]">
           <form>
             <div className="-mx-3 flex flex-wrap">
               <div className="w-full px-3 sm:w-1/2">
@@ -25,6 +33,8 @@ export const WeddingInvitationPage = () => {
                     name="firstName"
                     id="firstName"
                     placeholder="Primer Nombre"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
                   />
                 </div>
               </div>
@@ -40,6 +50,8 @@ export const WeddingInvitationPage = () => {
                     name="lastName"
                     id="lastName"
                     placeholder="Apellido"
+                    value={lastName}
+                    onChange={e => setLastName(e.target.value)}
                   />
                 </div>
               </div>
@@ -51,12 +63,14 @@ export const WeddingInvitationPage = () => {
                 ¿Cuántos invitados traerá?
               </label>
               <input
+                className="w-full appearance-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                 type="number"
                 name="guestNumber"
                 id="guestNumber"
                 placeholder="5"
                 min="0"
-                className="w-full appearance-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+                value={guestNumber}
+                onChange={e => setGuestNumber(parseInt(e.target.value))}
               />
             </div>
 
@@ -131,7 +145,7 @@ export const WeddingInvitationPage = () => {
               </button>
             </div>
           </form>
-        </div>
+        </article>
       </WhiteCard>
     </>
   );
