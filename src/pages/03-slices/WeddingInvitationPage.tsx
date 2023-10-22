@@ -1,5 +1,6 @@
 import { WhiteCard } from '../../components';
 import {useWeddingBounceStore} from "../../stores/wedding";
+import {FormEvent} from "react";
 
 
 
@@ -10,10 +11,24 @@ export const WeddingInvitationPage = () => {
   const setLastName = useWeddingBounceStore( state => state.setLastName );
   const guestNumber = useWeddingBounceStore( state => state.guestsCount );
   const setGuestNumber = useWeddingBounceStore( state => state.setGuestsCount );
+  const event = useWeddingBounceStore( state => state.eventDate );
   const eventDate = useWeddingBounceStore( state => state.getEventDate() );
   const eventTime = useWeddingBounceStore( state => state.getEventTime() );
   const setEventDate = useWeddingBounceStore( state => state.setEventDate );
   const setEventTime = useWeddingBounceStore( state => state.setEventTime );
+  const isConfirmed = useWeddingBounceStore( state => state.isConfirmed );
+  const setIsConfirmed = useWeddingBounceStore( state => state.setConfirmation );
+
+  const onSubmit = (e: FormEvent<HTMLFormElement> ) => {
+    e.preventDefault();
+    console.log({
+      name,
+      lastName,
+      guestNumber,
+      event: new Date(event),
+      isConfirmed
+    });
+  }
 
   return (
     <>
@@ -23,7 +38,7 @@ export const WeddingInvitationPage = () => {
 
       <WhiteCard className="flex items-center justify-center p-12">
         <article className="mx-auto w-full max-w-[550px]">
-          <form>
+          <form onSubmit={ e => onSubmit(e)}>
             <div className="-mx-3 flex flex-wrap">
               <div className="w-full px-3 sm:w-1/2">
                 <div className="mb-5">
@@ -124,6 +139,8 @@ export const WeddingInvitationPage = () => {
                     name="isComing"
                     id="radioButton1"
                     className="h-5 w-5"
+                    checked={isConfirmed}
+                    onChange={_ => setIsConfirmed(true)}
                   />
                   <label
                     className="pl-3 text-base font-medium text-[#07074D]"
@@ -137,6 +154,8 @@ export const WeddingInvitationPage = () => {
                     name="isComing"
                     id="radioButton2"
                     className="h-5 w-5"
+                    checked={!isConfirmed}
+                    onChange={_ => setIsConfirmed(false)}
                   />
                   <label
                     className="pl-3 text-base font-medium text-[#07074D]"

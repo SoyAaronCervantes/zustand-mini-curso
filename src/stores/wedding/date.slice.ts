@@ -25,7 +25,8 @@ export const createEventSlice: StateCreator<EventSlice, zustandMiddlewares> = (s
     const eventDate = get().eventDate;
     const date = new Date(eventDate);
     const hours = date.getHours().toString().padStart(2, '0');
-    return `${hours}:${date.getMinutes()}`;
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
   },
   setEventDate: (value: string) => set( state => {
     const date = new Date(value);
@@ -39,10 +40,10 @@ export const createEventSlice: StateCreator<EventSlice, zustandMiddlewares> = (s
   }, false, 'setEventDate'),
   setEventTime: (time: string) => set( state => {
     const [hours,minutes] = time.split(':');
-    const hoursParsed = parseInt(hours)
-    const minutesParsed = parseInt(minutes);
+    const hoursParsed = parseInt(hours, 10);
+    const minutesParsed = parseInt(minutes, 10);
     const newDate = new Date(state.eventDate);
-    newDate.setHours(hoursParsed, minutesParsed);
+    newDate.setHours(hoursParsed, minutesParsed, 0, 0);
     const eventDate = newDate.getTime();
     return { eventDate }
   }, false, 'setEventTime')
