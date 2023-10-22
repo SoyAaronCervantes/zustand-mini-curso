@@ -1,6 +1,6 @@
 import type {Task, TaskStatus} from "../../types";
 import {create, StateCreator} from "zustand";
-import {devtools} from "zustand/middleware";
+import {devtools, persist} from "zustand/middleware";
 import {immer} from "zustand/middleware/immer";
 // import {produce} from "immer";
 
@@ -19,7 +19,7 @@ interface Actions {
 }
 
 type TaskState = TaskStorage & Actions;
-type zustandMiddlewares = [ ["zustand/devtools", never], ["zustand/immer", never] ];
+type zustandMiddlewares = [["zustand/devtools", never], ["zustand/persist", unknown], ["zustand/immer", never]];
 
 const storeApi: StateCreator<TaskState, zustandMiddlewares> = (set, get) => ({
   draggingTaskId: undefined,
@@ -56,28 +56,34 @@ const storeApi: StateCreator<TaskState, zustandMiddlewares> = (set, get) => ({
     return values.filter(task => task.status === status);
   },
   setDraggingTaskId: (id: string) => set({draggingTaskId: id}, false, 'setDraggingTaskId'),
-  removeDraggingTaskId: () => set({ draggingTaskId: undefined }, false, 'removeDraggingTaskId'),
+  removeDraggingTaskId: () => set({draggingTaskId: undefined}, false, 'removeDraggingTaskId'),
   changeTaskStatus: (id, status) => {
-    const task: Task = { ...get().tasks[id] };
+    const task: Task = {...get().tasks[id]};
     task.status = status;
-    set( state => { state.tasks[id] = task }, false, 'changeTaskStatus')
+    set(state => {
+      state.tasks[id] = task
+    }, false, 'changeTaskStatus')
   },
   onTaskDrop: (status) => {
     const taskId = get().draggingTaskId;
-    if ( !taskId ) return;
+    if (!taskId) return;
     get().changeTaskStatus(taskId, status);
     get().removeDraggingTaskId();
   },
   addTask: (title, status) => {
     const id = crypto.randomUUID();
-    const task: Task = { id, title, status };
-    set( state => { state.tasks[task.id] = task }, false, 'addTask')
+    const task: Task = {id, title, status};
+    set(state => {
+      state.tasks[task.id] = task
+    }, false, 'addTask')
   }
 })
 
 
 export const useTaskStore = create<TaskState>()(
   devtools(
-    immer(storeApi)
+    persist(
+      immer(storeApi), {name: 'tasks'}
+    )
   )
 );
